@@ -15,12 +15,12 @@
     - name: "Set repository URL to override value"
       ansible.builtin.set_fact:
         _vagrant_repository_url: "{{ vagrant_repository_url_override }}"
-      when: "vagrant_repository_url_override | default(None)"
+      when: "vagrant_repository_url_override | default(false)"
 
     - name: "Set repository URL to default value"
       ansible.builtin.set_fact:
         _vagrant_repository_url: "{{ vagrant_repository_url }}"
-      when: "not vagrant_repository_url_override | default(true)"
+      when: "not (vagrant_repository_url_override | default(false))"
 
 - name: "Install the apt repository"
   when: "ansible_os_family == 'Debian'"
