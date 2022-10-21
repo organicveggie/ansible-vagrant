@@ -1,0 +1,15 @@
+---
+- name: "Verify"
+  hosts: "all"
+  gather_facts: false
+
+  tasks:
+    - name: "Run vagrant CLI"
+      ansible.builtin.command:  # noqa no-changed-when
+        cmd: >
+          vagrant --version
+      register: "_vagrant_run_result"
+
+    - name: "Check vagrant output"
+      ansible.builtin.assert:
+        that: "_vagrant_run_result | default(None)"

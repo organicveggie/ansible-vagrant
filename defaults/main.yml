@@ -1,0 +1,6 @@
+---
+vagrant_package_name: "vagrant"
+
+vagrant_gpg_key_url: "https://apt.releases.hashicorp.com/gpg"
+vagrant_gpg_armored_key_path: "/etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg_armored"
+vagrant_gpg_key_path: "/etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg"

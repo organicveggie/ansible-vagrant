@@ -1,0 +1,3 @@
+---
+# Debian/Ubuntu
+vagrant_repository_url: "https://apt.releases.hashicorp.com"

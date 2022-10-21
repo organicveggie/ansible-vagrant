@@ -1,0 +1,27 @@
+---
+argument_specs:
+  main:
+    short_description: "Install Vagrant"
+    description:
+      - "The main entry point does everything."
+    options:
+      vagrant_gpg_key_url:
+        type: "str"
+        required: false
+        default: "https://apt.releases.hashicorp.com/gpg"
+        description: |
+          URL for the GPG key for checking package signatures. Only applies to Debian and Ubuntu.
+
+      vagrant_package_name:
+        type: "str"
+        required: false
+        default: "vagrant"
+        description: |
+          URL for the GPG key for checking package signatures. Only applies to Debian and Ubuntu.
+
+      vagrant_repository_url_override:
+        type: "str"
+        required: false
+        description: |
+          Overrides the default URL for the package repository used to install Vagrant. Default URL
+          is specific to the OS and distribution.

@@ -1,0 +1,70 @@
+---
+- name: "Load OS-specific vars."
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - "main.yml"
+      paths:
+        - "vars"
+
+- name: "Set repository URL"
+  block:
+    - name: "Set repository URL to override value"
+      ansible.builtin.set_fact:
+        _vagrant_repository_url: "{{ vagrant_repository_url_override }}"
+      when: "vagrant_repository_url_override | default(None)"
+
+    - name: "Set repository URL to default value"
+      ansible.builtin.set_fact:
+        _vagrant_repository_url: "{{ vagrant_repository_url }}"
+      when: "not vagrant_repository_url_override | default(true)"
+
+- name: "Install the apt repository"
+  when: "ansible_os_family == 'Debian'"
+  block:
+    - name: "Download GPG key"
+      ansible.builtin.get_url:
+        url: "{{ vagrant_gpg_key_url }}"
+        dest: "{{ vagrant_gpg_armored_key_path }}"
+        mode: "0640"
+
+    - name: "De-armor GPG key"
+      no_log: True
+      block:
+        - name: "De-armor GPG key"
+          ansible.builtin.command: >
+            gpg --no-tty --dearmor {{ vagrant_gpg_armored_key_path }}
+          args:
+            creates: "{{ vagrant_gpg_armored_key_path }}.gpg"
+        - name: "Move dearmored key into place"
+          ansible.builtin.command: >
+            mv {{ vagrant_gpg_armored_key_path }}.gpg {{ vagrant_gpg_key_path }}
+          args:
+            creates: "{{ vagrant_gpg_key_path }}"
+
+    - name: "Add apt repository"
+      ansible.builtin.apt_repository:
+        repo: >
+          deb [arch=amd64 signed-by={{ vagrant_gpg_key_path }}] {{ _vagrant_repository_url }}
+            {{ ansible_distribution_release }} stable
+        state: "present"
+
+- name: "Install the yum repository"
+  when: "ansible_os_family == 'RedHat'"
+  block:
+    - name: "Add the Hashicorp Stable yum repository"
+      ansible.builtin.yum_repository:
+        name: "hashicorp"
+        description: "Hashicorp Stable - $basearch"
+        state: "present"
+        baseurl: "{{ _vagrant_repository_url }}"
+        gpgcheck: "yes"
+        gpgkey: "{{ vagrant_gpg_key_url }}"
+
+- name: "Install the Vagrant package"
+  ansible.builtin.package:
+    name: "{{ vagrant_package_name }}"
+    state: "present"

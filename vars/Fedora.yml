@@ -1,0 +1,3 @@
+---
+# Fedora
+vagrant_repository_url: "https://rpm.releases.hashicorp.com/fedora/hashicorp.repo"

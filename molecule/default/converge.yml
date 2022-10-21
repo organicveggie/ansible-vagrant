@@ -1,0 +1,7 @@
+---
+- name: "Converge"
+  hosts: "all"
+  tasks:
+    - name: "Include organicveggie.vagrant"
+      ansible.builtin.include_role:
+        name: "organicveggie.vagrant"
