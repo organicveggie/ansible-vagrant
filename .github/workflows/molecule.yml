@@ -64,23 +64,13 @@ jobs:
         with:
           python-version: "3.x"
       
-      - name: "Install python dependencies"
-        run: "pip install ansible docker molecule molecule-docker"
-      
-      - name: "Run Molecule tests"
-        run: "molecule test"
+      - name: "Install tox"
+        run: >
+          python -m pip install tox
+
+      - name: "Run Molecule tests."
+        run: "tox -- --debug test"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: "${{ matrix.distro }}"
-
-      # - name: "Install tox"
-      #   run: >
-      #     python -m pip install tox
-
-      # - name: "Run Molecule tests."
-      #   run: "tox -- --debug test"
-      #   env:
-      #     PY_COLORS: '1'
-      #     ANSIBLE_FORCE_COLOR: '1'
-      #     MOLECULE_DISTRO: "${{ matrix.distro }}"
