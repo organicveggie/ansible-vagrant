@@ -1,6 +1,12 @@
 ---
+# The name of the package which contains Vagrant.
 vagrant_package_name: "vagrant"
 
+# The URL of the GPG key for repository validation.
 vagrant_gpg_key_url: "https://apt.releases.hashicorp.com/gpg"
+
+# Path for storing the armored GPG key on Debian systems.
 vagrant_gpg_armored_key_path: "/etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg_armored"
+
+# The URL of the GPG key for repository validation.
 vagrant_gpg_key_path: "/etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg"
