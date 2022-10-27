@@ -35,14 +35,12 @@
       no_log: True
       block:
         - name: "De-armor GPG key"
-          ansible.builtin.command: >
-            gpg --no-tty --dearmor {{ vagrant_gpg_armored_key_path }}
-          args:
+          ansible.builtin.command:
+            cmd: gpg --no-tty --dearmor {{ vagrant_gpg_armored_key_path }}
             creates: "{{ vagrant_gpg_armored_key_path }}.gpg"
         - name: "Move dearmored key into place"
-          ansible.builtin.command: >
-            mv {{ vagrant_gpg_armored_key_path }}.gpg {{ vagrant_gpg_key_path }}
-          args:
+          ansible.builtin.command:
+            cmd: mv {{ vagrant_gpg_armored_key_path }}.gpg {{ vagrant_gpg_key_path }}
             creates: "{{ vagrant_gpg_key_path }}"
 
     - name: "Add apt repository"
