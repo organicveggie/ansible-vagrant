@@ -10,6 +10,11 @@
       paths:
         - "vars"
 
+- name: "Install GPG"
+  ansible.builtin.apt:
+    name: "gpg"
+  when: "ansible_os_family == 'Debian'"
+
 - name: "Set repository URL"
   block:
     - name: "Set repository URL to override value"
