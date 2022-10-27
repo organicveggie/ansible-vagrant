@@ -25,11 +25,24 @@
 - name: "Install the apt repository"
   when: "ansible_os_family == 'Debian'"
   block:
+    - name: "Check if GPG key already exists"
+      ansible.builtin.stat:
+        path: "{{ vagrant_gpg_key_path }}"
+      register: _vagrant_gpg_key
+    
+    - name: "Set GPG key fact"
+      ansible.builtin.set_fact:
+        _vagrant_gpg_key_exists: >
+          _vagrant_gpg_key is defined AND
+          _vagrant_gpg_key.stat is defined AND
+          _vagrant_gpg_key.stat.exists
+
     - name: "Download GPG key"
       ansible.builtin.get_url:
         url: "{{ vagrant_gpg_key_url }}"
         dest: "{{ vagrant_gpg_armored_key_path }}"
         mode: "0640"
+      when: not _vagrant_gpg_key_exists
 
     - name: "De-armor GPG key"
       no_log: True
@@ -42,6 +55,7 @@
           ansible.builtin.command:
             cmd: mv {{ vagrant_gpg_armored_key_path }}.gpg {{ vagrant_gpg_key_path }}
             creates: "{{ vagrant_gpg_key_path }}"
+      when: not _vagrant_gpg_key_exists
 
     - name: "Add apt repository"
       ansible.builtin.apt_repository:
