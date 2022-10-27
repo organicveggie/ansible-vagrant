@@ -38,7 +38,7 @@
     - name: "Set GPG key fact"
       ansible.builtin.set_fact:
         _vagrant_gpg_key_exists: >
-          {{ _vagrant_gpg_key is defined and 
+          {{ _vagrant_gpg_key is defined and
           _vagrant_gpg_key.stat is defined and
           _vagrant_gpg_key.stat.exists | bool }}
 
