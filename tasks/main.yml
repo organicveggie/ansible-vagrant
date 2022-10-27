@@ -29,33 +29,34 @@
       ansible.builtin.stat:
         path: "{{ vagrant_gpg_key_path }}"
       register: _vagrant_gpg_key
-    
+
     - name: "Set GPG key fact"
       ansible.builtin.set_fact:
         _vagrant_gpg_key_exists: >
-          _vagrant_gpg_key is defined AND
-          _vagrant_gpg_key.stat is defined AND
-          _vagrant_gpg_key.stat.exists
+            {{ _vagrant_gpg_key is defined and 
+            _vagrant_gpg_key.stat is defined and
+            _vagrant_gpg_key.stat.exists | bool }}
 
-    - name: "Download GPG key"
-      ansible.builtin.get_url:
-        url: "{{ vagrant_gpg_key_url }}"
-        dest: "{{ vagrant_gpg_armored_key_path }}"
-        mode: "0640"
+    - name: "Install Hashicorp GPG key"
       when: not _vagrant_gpg_key_exists
-
-    - name: "De-armor GPG key"
-      no_log: True
       block:
-        - name: "De-armor GPG key"
-          ansible.builtin.command:
-            cmd: gpg --no-tty --dearmor {{ vagrant_gpg_armored_key_path }}
-            creates: "{{ vagrant_gpg_armored_key_path }}.gpg"
-        - name: "Move dearmored key into place"
-          ansible.builtin.command:
-            cmd: mv {{ vagrant_gpg_armored_key_path }}.gpg {{ vagrant_gpg_key_path }}
-            creates: "{{ vagrant_gpg_key_path }}"
-      when: not _vagrant_gpg_key_exists
+        - name: "Download GPG key"
+          ansible.builtin.get_url:
+            url: "{{ vagrant_gpg_key_url }}"
+            dest: "{{ vagrant_gpg_armored_key_path }}"
+            mode: "0640"
+
+        - name: "Dearmor and install key"
+          no_log: True
+          block:
+            - name: "De-armor GPG key"
+              ansible.builtin.command:
+                cmd: gpg --no-tty --dearmor {{ vagrant_gpg_armored_key_path }}
+                creates: "{{ vagrant_gpg_armored_key_path }}.gpg"
+            - name: "Move dearmored key into place"
+              ansible.builtin.command:
+                cmd: mv {{ vagrant_gpg_armored_key_path }}.gpg {{ vagrant_gpg_key_path }}
+                creates: "{{ vagrant_gpg_key_path }}"
 
     - name: "Add apt repository"
       ansible.builtin.apt_repository:
